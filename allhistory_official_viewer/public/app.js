@@ -233,7 +233,8 @@ async function loadYear(yearInput, options = {}) {
 function scheduleNearbyPrefetch() {
   window.clearTimeout(state.prefetchTimer);
   state.prefetchTimer = window.setTimeout(() => {
-    const offsets = [-2, -1, 1, 2];
+    const step = getStepSize();
+    const offsets = [...new Set([-2 * step, -step, -2, -1, 1, 2, step, 2 * step])];
     const indexes = offsets
       .map((offset) => state.currentIndex + offset)
       .filter((index) => index >= 0 && index < state.timeline.length);
@@ -277,12 +278,20 @@ async function prefetchYearNearViewport(year) {
   try {
     const style = await loadStyle(year);
     const urls = tileUrlsNearViewport(style);
-    const run = () => urls.forEach((url) => fetch(url, { cache: "force-cache" }).catch(() => {}));
+    const run = () => urls.forEach((url) => fetch(url, { cache: "force-cache", priority: "low" }).catch(() => {}));
     if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 1800 });
     else window.setTimeout(run, 1000);
   } catch {
     // Prefetch is opportunistic.
   }
+}
+
+function scheduleInputPrefetch() {
+  window.clearTimeout(state.prefetchTimer);
+  state.prefetchTimer = window.setTimeout(() => {
+    const year = resolveAvailableYear($("year-input").value);
+    if (year && year !== state.currentYear) prefetchYearNearViewport(year);
+  }, 700);
 }
 
 function getStepSize() {
@@ -353,6 +362,7 @@ function bindUi() {
   $("year-input").addEventListener("change", () => {
     loadYear($("year-input").value);
   });
+  $("year-input").addEventListener("input", scheduleInputPrefetch);
 
   $("year-input").addEventListener("blur", () => {
     const year = normalizeYear($("year-input").value);
