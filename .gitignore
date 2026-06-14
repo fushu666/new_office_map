@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+
+node_modules/
+npm-debug.log*
+
+.cache/
+allhistory_official_viewer/.cache/
+*.log
+*.pid
+
+we_chat_map/project.private.config.json

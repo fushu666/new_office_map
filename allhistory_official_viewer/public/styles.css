@@ -1,0 +1,393 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: "Noto Serif SC", "Songti SC", "SimSun", "Microsoft YaHei", serif;
+  background: #4f8cad;
+}
+
+:root {
+  --ui-font: "Noto Serif SC", "Songti SC", "SimSun", "Microsoft YaHei", serif;
+  --number-font: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+}
+
+#map {
+  position: fixed;
+  inset: 0;
+}
+
+.maplibregl-ctrl-bottom-right {
+  bottom: 18px;
+  right: 18px;
+}
+
+.map-controls {
+  position: fixed;
+  left: 18px;
+  top: 18px;
+  z-index: 2;
+  width: min(360px, calc(100vw - 36px));
+  box-sizing: border-box;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(16, 35, 50, 0.9);
+  color: #f8f1da;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(14px);
+}
+
+.control-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.title-block {
+  min-width: 0;
+}
+
+h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+#status {
+  margin: 3px 0 0;
+  color: rgba(248, 241, 218, 0.64);
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#year-label {
+  flex: 0 0 auto;
+  color: #ffffff;
+  font-family: var(--number-font);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.head-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.panel-toggle {
+  display: none;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff4d3;
+  font-family: var(--number-font);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.map-controls.is-collapsed .control-head {
+  margin-bottom: 0;
+}
+
+.map-controls.is-collapsed .control-body {
+  display: none;
+}
+
+.map-controls.is-collapsed .panel-toggle {
+  transform: rotate(180deg);
+}
+
+.year-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+input,
+button {
+  height: 40px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.year-form input {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0 11px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-family: var(--number-font);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+
+.year-form input::placeholder {
+  color: rgba(248, 241, 218, 0.48);
+}
+
+button {
+  border: 0;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f8f1da;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.load-year-btn {
+  min-width: 58px;
+  border: 1px solid rgba(238, 196, 112, 0.38);
+  background: rgba(238, 196, 112, 0.16);
+  color: #fff7df;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.load-year-btn.is-loading {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.timeline-row {
+  margin-top: 12px;
+}
+
+#timeline-slider {
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  accent-color: #eec470;
+}
+
+#timeline-count {
+  display: block;
+  margin-top: 2px;
+  color: rgba(248, 241, 218, 0.62);
+  font-size: 12px;
+  text-align: right;
+}
+
+.timeline-actions {
+  display: grid;
+  grid-template-columns: 44px 72px 44px;
+  align-items: stretch;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.timeline-actions button,
+.step-size {
+  height: 38px;
+  padding: 0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.timeline-actions button {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff4d3;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.step-size {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-family: var(--number-font);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+@media (hover: hover) {
+  button:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+}
+
+@media (max-width: 900px) {
+  .map-controls {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: auto;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 12px;
+  }
+
+  .maplibregl-ctrl-bottom-right {
+    bottom: calc(188px + env(safe-area-inset-bottom));
+    right: 12px;
+  }
+
+  .panel-collapsed .maplibregl-ctrl-bottom-right {
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .panel-toggle {
+    display: grid;
+    place-items: center;
+  }
+
+  .map-controls.is-collapsed {
+    width: auto;
+    left: 12px;
+    right: auto;
+    padding: 10px 12px;
+  }
+
+  .control-head {
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: 16px;
+  }
+
+  #year-label {
+    font-size: 23px;
+  }
+
+  input,
+  button {
+    height: 42px;
+  }
+
+  .timeline-actions button,
+  .step-size {
+    height: 38px;
+  }
+}
+
+@media (max-width: 520px) {
+  .map-controls {
+    left: 8px;
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    padding: 9px;
+  }
+
+  .maplibregl-ctrl-bottom-right {
+    bottom: calc(174px + env(safe-area-inset-bottom));
+    right: 8px;
+  }
+
+  .panel-collapsed .maplibregl-ctrl-bottom-right {
+    bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
+  .control-head {
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 16px;
+  }
+
+  #status,
+  #timeline-count {
+    font-size: 11px;
+  }
+
+  .timeline-row {
+    margin-top: 8px;
+  }
+
+  .timeline-actions {
+    grid-template-columns: 42px 68px 42px;
+    gap: 7px;
+    margin-top: 7px;
+  }
+
+  input,
+  button {
+    height: 38px;
+  }
+
+  .timeline-actions button,
+  .step-size {
+    height: 36px;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .map-controls {
+    top: 8px;
+    bottom: auto;
+    left: 8px;
+    right: auto;
+    width: min(330px, calc(100vw - 16px));
+    padding: 9px;
+  }
+
+  .control-head {
+    align-items: center;
+  }
+
+  .control-head {
+    margin-bottom: 7px;
+  }
+
+  .timeline-row {
+    margin-top: 7px;
+  }
+
+  .timeline-actions {
+    grid-template-columns: 40px 64px 40px;
+    margin-top: 7px;
+  }
+
+  input,
+  button {
+    height: 36px;
+  }
+
+  .timeline-actions button,
+  .step-size {
+    height: 34px;
+  }
+
+  .maplibregl-ctrl-bottom-right {
+    bottom: 8px;
+    right: 8px;
+  }
+}

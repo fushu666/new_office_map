@@ -1,0 +1,82 @@
+<view class="page">
+  <view class="top-safe" style="height: {{safeTop}}px;"></view>
+
+  <movable-area class="map-area">
+    <movable-view
+      class="map-movable"
+      direction="all"
+      scale
+      scale-min="1"
+      scale-max="4"
+      scale-value="{{scale}}"
+      x="{{mapX}}"
+      y="{{mapY}}"
+      style="width: {{mapWidth}}px; height: {{mapHeight}}px;"
+      bindchange="handleMapMove"
+      bindscale="handleMapScale"
+    >
+      <image
+        wx:if="{{renderer !== 'vectorCanvas'}}"
+        class="map-image"
+        src="{{snapshotUrl}}"
+        mode="aspectFill"
+        style="width: {{mapWidth}}px; height: {{mapHeight}}px;"
+        bindload="handleSnapshotLoad"
+        binderror="handleSnapshotError"
+      />
+      <canvas
+        wx:else
+        id="vector-canvas"
+        canvas-id="vector-canvas"
+        type="2d"
+        class="vector-canvas"
+        style="width: {{mapWidth}}px; height: {{mapHeight}}px;"
+      ></canvas>
+    </movable-view>
+  </movable-area>
+
+  <view class="controls">
+    <view class="head">
+      <view>
+        <view class="title">AllHistory 官方地图</view>
+        <view class="status">{{status}}</view>
+      </view>
+      <view class="year-label">{{yearId}}</view>
+    </view>
+
+    <form bindsubmit="handleSubmit">
+      <view class="year-row">
+        <input
+          class="year-input"
+          name="year"
+          value="{{yearInput}}"
+          placeholder="AD750 / 750 / -221"
+          confirm-type="done"
+          bindconfirm="handleYearConfirm"
+          bindblur="handleYearBlur"
+        />
+        <button class="load-button" form-type="submit">加载</button>
+      </view>
+    </form>
+
+    <slider
+      class="timeline-slider"
+      min="0"
+      max="{{timelineMax}}"
+      step="1"
+      value="{{currentIndex}}"
+      activeColor="#eec470"
+      backgroundColor="rgba(255,255,255,0.28)"
+      block-color="#f6d17b"
+      bindchanging="handleSliderChanging"
+      bindchange="handleSliderChange"
+    />
+
+    <view class="count">{{timelineText}}</view>
+
+    <view class="actions">
+      <button bindtap="handlePrev">上一步</button>
+      <button bindtap="handleNext">下一步</button>
+    </view>
+  </view>
+</view>

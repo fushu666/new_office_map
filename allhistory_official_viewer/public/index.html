@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>世界历史地图</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/maplibre/maplibre-gl.css">
+  <link rel="stylesheet" href="/styles.css?v=20260614f">
+</head>
+<body class="allhistory-map">
+  <div id="map"></div>
+
+  <section class="map-controls" aria-label="地图时间控制">
+    <header class="control-head">
+      <div class="title-block">
+        <h1>世界历史地图</h1>
+        <p id="status">ready</p>
+      </div>
+      <div class="head-actions">
+        <strong id="year-label">750</strong>
+        <button type="button" id="panel-toggle" class="panel-toggle" aria-label="收起控制面板" aria-expanded="true">⌄</button>
+      </div>
+    </header>
+
+    <div class="control-body">
+      <form id="year-form" class="year-form" autocomplete="off">
+        <input id="year-input" type="text" value="750" placeholder="输入年份，如 750 或 -221" inputmode="numeric" autocomplete="off">
+        <button type="submit" id="load-year" class="load-year-btn">加载</button>
+      </form>
+
+      <div class="timeline-row">
+        <input id="timeline-slider" type="range" min="0" max="0" step="1" value="0" autocomplete="off" aria-label="时间轴">
+        <span id="timeline-count">读取时间轴...</span>
+      </div>
+
+      <div class="timeline-actions">
+        <button type="button" id="step-back" aria-label="上一步">&lsaquo;</button>
+        <input id="step-size" class="step-size" type="text" value="1" inputmode="numeric" autocomplete="off" aria-label="步长">
+        <button type="button" id="step-next" aria-label="下一步">&rsaquo;</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="/maplibre/maplibre-gl.js"></script>
+  <script src="/app.js?v=20260614f"></script>
+</body>
+</html>
