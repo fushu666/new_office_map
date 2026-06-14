@@ -24,7 +24,16 @@ const state = {
   styleCache: new Map(),
   prefetchTimer: 0,
   viewSaveTimer: 0,
+  deferredLayerTimer: 0,
 };
+
+const DEFERRED_SOURCES = new Set([
+  "texture",
+  "dlsgis_his_terrain",
+  "dlsgis_his_regime_city",
+  "dlsgis_his_regime_spec",
+  "dlsgis_his_regime_lonlat",
+]);
 
 function $(id) {
   return document.getElementById(id);
@@ -181,6 +190,28 @@ async function loadStyle(year) {
   return style;
 }
 
+function splitCriticalStyle(style) {
+  const next = JSON.parse(JSON.stringify(style));
+  const deferredLayerIds = [];
+  for (const layer of next.layers || []) {
+    if (!DEFERRED_SOURCES.has(layer.source)) continue;
+    if (layer.layout?.visibility === "none") continue;
+    layer.layout = { ...(layer.layout || {}), visibility: "none" };
+    deferredLayerIds.push(layer.id);
+  }
+  return { style: next, deferredLayerIds };
+}
+
+function revealDeferredLayers(layerIds) {
+  window.clearTimeout(state.deferredLayerTimer);
+  state.deferredLayerTimer = window.setTimeout(() => {
+    for (const id of layerIds) {
+      if (!state.map.getLayer(id)) continue;
+      state.map.setLayoutProperty(id, "visibility", "visible");
+    }
+  }, 900);
+}
+
 async function loadYear(yearInput, options = {}) {
   const requestedYear = normalizeYear(yearInput);
   const year = resolveAvailableYear(requestedYear);
@@ -209,18 +240,24 @@ async function loadYear(yearInput, options = {}) {
       scheduleNearbyPrefetch();
     };
 
-    state.map.setStyle(JSON.parse(JSON.stringify(style)));
+    window.clearTimeout(state.deferredLayerTimer);
+    const critical = splitCriticalStyle(style);
+    state.map.setStyle(critical.style);
     state.map.once("styledata", () => {
       if (token !== state.loadingToken) return;
       setStatus(`${yearIdToDisplay(year)} 正在加载瓦片`);
       state.map.once("render", () => window.setTimeout(completeLoad, 300));
     });
-    state.map.once("idle", completeLoad);
+    state.map.once("idle", () => {
+      completeLoad();
+      revealDeferredLayers(critical.deferredLayerIds);
+    });
 
     window.setTimeout(() => {
       if (token !== state.loadingToken) return;
       if ($("status").textContent.includes("正在")) {
         completeLoad();
+        revealDeferredLayers(critical.deferredLayerIds);
       }
     }, 1800);
   } catch (error) {
@@ -233,8 +270,7 @@ async function loadYear(yearInput, options = {}) {
 function scheduleNearbyPrefetch() {
   window.clearTimeout(state.prefetchTimer);
   state.prefetchTimer = window.setTimeout(() => {
-    const step = getStepSize();
-    const offsets = [...new Set([-2 * step, -step, -2, -1, 1, 2, step, 2 * step])];
+    const offsets = [-2, -1, 1, 2];
     const indexes = offsets
       .map((offset) => state.currentIndex + offset)
       .filter((index) => index >= 0 && index < state.timeline.length);
